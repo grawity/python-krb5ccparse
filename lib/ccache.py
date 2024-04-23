@@ -205,7 +205,15 @@ if __name__ == "__main__":
     import os
     from pprint import pprint
 
+    # Assuming it hasn't been overwritten system-wide
+    default_cache = os.environ.get("KRB5CCNAME",
+                                   "FILE:/tmp/krb5cc_%d" % os.getuid())
+
     parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--cache", default=default_cache,
+                        help="path to the credential cache")
+    parser.add_argument("-o", "--output",
+                        help="output file")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="dump the cache contents to stdout")
     parser.add_argument("-p", "--principal", action="append", default=[],
@@ -214,14 +222,21 @@ if __name__ == "__main__":
 
     exclude = {*args.principal}
 
-    try:
-        cctype, ccname = os.environ["KRB5CCNAME"].split(":", 1)
-    except KeyError:
-        cctype, ccname = "FILE", "/tmp/krb5cc_%d" % os.getuid()
+    ccspec = args.cache or os.environ.get("KRB5CCNAME",
+                                          "FILE:/tmp/krb5cc_%d" % os.getuid())
 
-    cache = None
+    if ":" in ccspec:
+        cctype, ccname = ccspec.split(":", 1)
+        if cctype != "FILE":
+            raise RuntimeError("Only FILE: caches are supported")
+    else:
+        cctype, ccname = "FILE", ccspec
+
     with open(ccname, "rb") as fh:
         cache = CacheReader(fh).read_cache()
+
+    if args.verbose:
+        pprint(cache)
 
     creds = []
     for cred in cache.credentials:
@@ -230,12 +245,8 @@ if __name__ == "__main__":
             print(f"Skipping ticket for {name}@{realm}")
             continue
         creds.append(cred)
-
-    if args.verbose:
-        pprint(cache)
-
     cache.credentials = creds
 
-    with open("/tmp/krb5cc", "wb") as fh:
+    with open(args.output or ccname, "wb") as fh:
         os.fchmod(fh.fileno(), 0o600)
         CacheWriter(fh).write_cache(cache)

@@ -1,3 +1,5 @@
-Usage:
+Removing individual tickets from a file-based cache:
 
-    python -m lib.ccache -p host/foo@EXAMPLE.COM
+```none
+$ python -m lib.ccache -p host/foo@EXAMPLE.COM
+```
