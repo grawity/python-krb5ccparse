@@ -105,41 +105,18 @@ class KeytabWriter(KrbBinaryWriter):
         if True or entry.kvno > 0xFF:
             self.write_u32(entry.kvno)
 
-    '''
-    def measure_principal(self, princ):
-        length = 0
-        length += 2 # u16
-        length += 2 + len(princ.realm)
-        length += sum([2 + len(x) for x in princ.components])
-        if self._version >= 2:
-            length += 4 # u32
-        return length
-
-    def measure_entry(self, entry):
-        length = 0
-        length += self.measure_principal(entry.principal)
-        length += 4 # time
-        length += 1 # u8
-        length += 2 # u16
-        length += 2 + len(entry.keydata)
-        length += 4
-        return length
-    '''
-
     def write_keytab(self, keytab):
         self.write_u8(5)
         self.write_u8(keytab.version)
         self._version = keytab.version
         self._uses_native_endian = (self._version == 1)
         for x in keytab.entries:
-            length_pos = self.tell()
-            self.write_s32(0)
-            start_pos = self.tell()
+            tmp = KeytabWriter()
+            tmp._version = self._version
+            tmp._uses_native_endian = self._uses_native_endian
+            tmp.write_entry(x)
+            self.write_s32(tmp.tell())
             self.write_entry(x)
-            end_pos = self.tell()
-            self.seek(length_pos)
-            self.write_s32(end_pos - start_pos)
-            self.seek(end_pos)
 
 if __name__ == "__main__":
     import argparse
