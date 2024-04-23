@@ -28,9 +28,9 @@ class CachedCredential:
 @dataclass
 class Cache:
     version: int
-    header: list
+    header: list[HeaderField]
     default_princ: Principal
-    credentials: list
+    credentials: list[CachedCredential]
 
 class CacheReader(KrbBinaryReader):
     _version = None
@@ -212,6 +212,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--cache", default=default_cache,
                         help="path to the credential cache")
+    parser.add_argument("-o", "--output", default="/dev/null",
+                        help="path to the output file")
     args = parser.parse_args()
 
     if ":" in args.cache:
@@ -225,3 +227,6 @@ if __name__ == "__main__":
         cache = CacheReader(fh).read_cache()
 
     pprint(cache)
+
+    with open(args.output, "wb") as fh:
+        CacheWriter(fh).write_cache(cache)

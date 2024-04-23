@@ -7,7 +7,7 @@ KRB5_NT_PRINCIPAL = 1
 @dataclass
 class Principal:
     nametype: int
-    components: list
+    components: list[bytes]
     realm: bytes
 
     def unparse(self):
