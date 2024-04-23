@@ -1,5 +1,11 @@
-Removing individual tickets from a file-based cache:
+Dump the cache contents:
 
 ```none
-$ python -m lib.ccache -p host/foo@EXAMPLE.COM
+$ python -m lib.ccache
+```
+
+Remove individual tickets from a file-based cache:
+
+```none
+$ ./kremovetkt -p host/foo@EXAMPLE.COM
 ```
