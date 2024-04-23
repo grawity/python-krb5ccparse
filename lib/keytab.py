@@ -48,6 +48,7 @@ class KeytabReader(KrbBinaryReader):
         keydata = self.read_data()
         if end_pos - self.tell() >= 4:
             kvno = self.read_u32()
+        # Skip to end of the slot
         self.seek(end_pos)
         return KeytabEntry(principal,
                            timestamp,
@@ -71,6 +72,7 @@ class KeytabReader(KrbBinaryReader):
             if length > 0:
                 entries.append(self.read_entry(length))
             elif length < 0:
+                # Skip empty slot
                 self.read(-length)
             else:
                 break
@@ -130,12 +132,13 @@ class KeytabWriter(KrbBinaryWriter):
         self._version = keytab.version
         self._uses_native_endian = (self._version == 1)
         for x in keytab.entries:
-            start_pos = self.tell()
+            length_pos = self.tell()
             self.write_s32(0)
+            start_pos = self.tell()
             self.write_entry(x)
             end_pos = self.tell()
-            self.seek(start_pos)
-            self.write_s32(end_pos - (start_pos + 4))
+            self.seek(length_pos)
+            self.write_s32(end_pos - start_pos)
             self.seek(end_pos)
 
 if __name__ == "__main__":
