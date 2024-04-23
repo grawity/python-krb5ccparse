@@ -37,19 +37,19 @@ class KrbBinaryReader(BinaryReader):
 
     def read_u16(self):
         if self._uses_native_endian:
-            return self._read_fmt(2, "H")
+            return self._read_fmt(2, "=H")
         else:
             return self.read_u16_be()
 
     def read_u32(self):
         if self._uses_native_endian:
-            return self._read_fmt(4, "L")
+            return self._read_fmt(4, "=L")
         else:
             return self.read_u32_be()
 
     def read_s32(self):
         if self._uses_native_endian:
-            return self._read_fmt(4, "l")
+            return self._read_fmt(4, "=l")
         else:
             return self._read_fmt(4, ">l")
 
@@ -68,19 +68,19 @@ class KrbBinaryWriter(BinaryWriter):
 
     def write_u16(self, value):
         if self._uses_native_endian:
-            return self._write_fmt("H", value)
+            return self._write_fmt("=H", value)
         else:
             return self.write_u16_be(value)
 
     def write_u32(self, value):
         if self._uses_native_endian:
-            return self._write_fmt("L", value)
+            return self._write_fmt("=L", value)
         else:
             return self.write_u32_be(value)
 
     def write_s32(self, value):
         if self._uses_native_endian:
-            return self._write_fmt("l", value)
+            return self._write_fmt("=l", value)
         else:
             return self._write_fmt(">l", value)
 
