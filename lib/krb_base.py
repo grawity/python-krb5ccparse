@@ -11,7 +11,10 @@ class Principal:
     realm: bytes
 
     def unparse(self):
-        return b"@".join([b"/".join(self.components), self.realm]).decode()
+        # Mostly but not 100% correct
+        sz = [s.replace(b"/", b"\\/") for s in self.components]
+        sz = b"@".join([b"/".join(self.components), self.realm])
+        return sz.decode()
 
 @dataclass
 class Keyblock:
