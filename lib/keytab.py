@@ -50,11 +50,7 @@ class KeytabReader(KrbBinaryReader):
             kvno = self.read_u32()
         # Skip to end of the slot
         self.seek(end_pos)
-        return KeytabEntry(principal,
-                           timestamp,
-                           kvno,
-                           enctype,
-                           keydata)
+        return KeytabEntry(principal, timestamp, kvno, enctype, keydata)
 
     def read_keytab(self):
         magic = self.read_u8()

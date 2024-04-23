@@ -125,10 +125,7 @@ class CacheReader(KrbBinaryReader):
             credentials.append(self.read_credential())
         if self.tell() < end_pos:
             raise IOError("Leftover data after last entry")
-        return Cache(version,
-                     header,
-                     default_princ,
-                     credentials)
+        return Cache(version, header, default_princ, credentials)
 
 class CacheWriter(KrbBinaryWriter):
     def write_data(self, data):
