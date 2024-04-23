@@ -133,7 +133,7 @@ if __name__ == "__main__":
     with open(args.keytab, "rb") as fh:
         keytab = KeytabReader(fh).read_keytab()
 
-    #pprint(keytab)
+    pprint(keytab)
 
     with open(args.output, "wb") as fh:
         KeytabWriter(fh).write_keytab(keytab)
